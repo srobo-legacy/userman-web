@@ -21,3 +21,19 @@ class rest(restRequest):
 
     def validate(self, command, user):
         return self._handler.validate(command, user)
+
+if __name__ == '__main__':
+    # self test
+    from types import ListType
+
+    print 'User Search:'
+    r = rest('user')
+    users = r.handle('search', {'search': ''})
+    assert type(users) is ListType, "Got wrong type back from search: '%s'" % users
+    print users
+
+    print 'Group Search:'
+    r = rest('group')
+    groups = r.handle('search', {'regexp': ''})
+    assert type(groups) is ListType, "Got wrong type back from search: '%s'" % groups
+    print groups
