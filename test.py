@@ -30,7 +30,7 @@ def test_user(u):
         assert ret is None, 'Should not be able to add same user twice!'
 
     print """Check the user we just added is listed."""
-    # TODO: also search by email
+    # TODO: actually search, rather than just a name lookup
     for srch in [uid, fn, ln]: #, addr]:
         res = u.search(srch)
         assert uid in res, "Failed to find user when searching for '%s'" % srch
