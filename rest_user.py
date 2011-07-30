@@ -4,28 +4,23 @@ import re
 from types import *
 from rest_request import restRequest
 
-'''
-class restGroup(restRequest):
-    _mapping = { "info"     : user.members
-               , "add"      : user.create
-               , "rm"       : user.delete
-               , "search"   : user.search
-               , "addusers" : user.addusers
-               , "delusers" : user.delusers
-               }
-
-    def handle(self, command, kwargs):
-        return None
-
-    def validate(self, command, user):
-        return False
-'''
-
 def def_uidBuilder(first_name, last_name):
     return first_name + last_name
 
-class user:
+class user(restRequest):
     uidBuilder = None
+
+    def __init__(self):
+        self._mapping = { "info"        : self.info
+                        , "add"         : self.create
+                        , "rm"          : self.delete
+                        , "search"      : self.search
+                        , "passwd"      : self.passwd
+                        , "rand_passwd" : self.rand_pass
+                        }
+
+    def validate(self, command, user):
+        return False
 
     def _names_to_id(self, first, last):
         if self.uidBuilder is None:

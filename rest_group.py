@@ -3,24 +3,20 @@ import sr
 from types import *
 from rest_request import restRequest
 
-'''
-class restGroup(restRequest):
-    _mapping = { "members"  : group.members
-               , "add"      : group.create
-               , "rm"       : group.delete
-               , "list"     : group.list
-               , "addusers" : group.addusers
-               , "delusers" : group.delusers
-               }
+class group(restRequest):
 
-    def handle(self, command, kwargs):
-        return None
+    def __init__(self):
+        self._mapping = { "add"          : self.create
+                        , "rm"           : self.delete
+                        , "search"       : self.search
+                        , "info"         : self.info
+                        , "listmembers"  : self.listMembers
+                        , "addmembers"   : self.addMembers
+                        , "delmembers"   : self.removeMembers
+                        }
 
     def validate(self, command, user):
         return False
-'''
-
-class group:
 
     def _get_group(self, gid):
         group = sr.groups.group(gid)
