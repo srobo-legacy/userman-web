@@ -111,17 +111,30 @@ class user(restRequest):
                , 'groups'       : u.groups()
                }
 
-    def passwd(self, name, password):
+    def passwd(self, name, new_password, old_password = None, pass_token = None):
         """
         Set a user's password.
         @param name (string): The name of the user to change the password of.
-        @param password (string): The new password to set.
+        @param new_password (string): The new password to set.
+        @param old_password (string): The old password for confirmation.
+        @param pass_token (string): A password reset token.
+        Note that only one of old_password and pass_token should be supplied,
+        the other will be checked against None to determine which to use.
         """
+
+        if pass_token is None and old_password is None:
+            raise Exception("Cannot change password without verification: requires either the old password or a password reset token")
 
         u = self._get_user(name)
 
-        if not u.set_passwd( new = password ):
-            raise Exception("Failed to set password for user '%s'" % name)
+        if pass_token is None:
+            # use the (given) old password as part of the reset
+            if not u.set_passwd(old_password, new_password):
+                raise Exception("Failed to set password for user '%s'" % name)
+        else:
+            # TODO: verify the pass_token!
+            if not u.set_passwd(new=new_password):
+                raise Exception("Failed to set password for user '%s'" % name)
 
     def rand_pass(self, name):
         """
