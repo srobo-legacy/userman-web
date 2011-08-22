@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 
 from rest_user import user, def_uidBuilder
 from rest_group import group
