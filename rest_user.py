@@ -2,7 +2,9 @@
 import sr
 import re
 from types import *
+from datetime import timedelta
 from rest_request import restRequest
+from securetoken import Token
 
 def def_uidBuilder(first_name, last_name):
     return first_name + last_name
@@ -16,7 +18,7 @@ class user(restRequest):
                         , "rm"          : self.delete
                         , "search"      : self.search
                         , "passwd"      : self.passwd
-                        , "rand_passwd" : self.rand_pass
+                        , "send_pass_token" : self.send_pass_token
                         }
 
     def validate(self, command, user):
@@ -132,19 +134,28 @@ class user(restRequest):
             if not u.set_passwd(old_password, new_password):
                 raise Exception("Failed to set password for user '%s'" % name)
         else:
-            # TODO: verify the pass_token!
+            tok = securetoken.load(pass_token)
+            if tok is None or tok.name != name:
+                raise Exception("Invalid pass token for user '%s'" % name)
+
+            if tok.age() > timedelta(minutes=60):
+                raise Exception("Pass token out of date")
+
             if not u.set_passwd(new=new_password):
                 raise Exception("Failed to set password for user '%s'" % name)
 
-    def rand_pass(self, name):
+    def send_pass_token(self, name):
         """
-        Set a random password for a user.
-        @param name (string): The name of the user to give a random password.
-        # is this not made redundant by #userpasswd?
+        Sends the user a forgotten password token, suitable for supplying to /user/passwd.
+        These are stored by the server against a user name,
+        and are only valid for a fixed duration, probably under an hour.
+        @param name (string): The name of the user to reset the password of and to send the email to.
+        TODO: include user id verification? Confirm school based on random selection of 3?
         """
 
-        new_passwd = sr.users.GenPasswd()
-        u = self.passwd(name, new_passwd)
+        # TODO: ident validation
+        info = dict(name=name)
+        token = securetoken.Token(info).encrypt()
 
         # TODO: how do we want to handle this bit?
-        # mailer.send_template( "new-password", u, { "PASSWORD": new_passwd } )
+        # mailer.send_template( "pass_token", u, { "TOKEN": token } )
