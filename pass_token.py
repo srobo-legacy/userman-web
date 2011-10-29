@@ -11,7 +11,7 @@ def token_encode(data):
 
 def token_decode(token):
     """
-    Converts a dictionary into an encoded string.
+    Converts an encoded string into a dictionary.
     @param token (token): The token to decode.
     @returns: A dictionary of the data that was encoded.
     """
